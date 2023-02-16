@@ -1,9 +1,22 @@
-const name = "James";
+const createMatrix = (size) => {
 
-const person = { first: name };
+  const containerMatrix = [];
 
-console.log(person);
+  const recursive = (yPos) => {
 
-const sayHelloLinting = (fName) => {
-  console.log(`Hello linting, ${fName}`);
-};
+    if(yPos === size) return;
+
+    for (let i = 0; i < size; i++) {
+      containerMatrix.push([yPos,i]);
+    }
+    
+    recursive(yPos+1)
+     
+  
+  };
+  recursive(0)
+  console.log(containerMatrix)
+}
+
+
+createMatrix(8);
