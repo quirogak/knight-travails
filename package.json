@@ -1,0 +1,26 @@
+{
+  "name": "knight-travails",
+  "version": "1.0.0",
+  "description": "For this project, i'll be using a data structure called \"graph\", the task to complete is making a 8x8 chess game board, then, make a function that accepts two parameters, the first one will be the initial position of the Knight and the second, the final position. This function should return the shortest way from both positions.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/quirogak/knight-travails.git"
+  },
+  "author": "Ronald Quiroga Montiel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/quirogak/knight-travails/issues"
+  },
+  "homepage": "https://github.com/quirogak/knight-travails#readme",
+  "devDependencies": {
+    "eslint": "^8.34.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^8.6.0",
+    "eslint-plugin-import": "^2.27.5",
+    "prettier": "2.8.4"
+  }
+}
