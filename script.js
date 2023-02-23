@@ -81,13 +81,12 @@ const createKnight = (() => {
         firstPos,
         possibleKnightMoves(createMatrix(8), firstPos)
       );
-
-      console.log(firstObj)
   
 
-      firstObj.moves.forEach((e) => { // traverse possible moves, in order to find every path from firstPos to lastPos
+      
+      for (let i = 0; i < firstObj.moves.length; i++) {
 
-        console.log(e)
+        const e = firstObj.moves[i];
 
         const currentNode = Node(e,possibleKnightMoves(createMatrix(8), e))
 
@@ -96,27 +95,36 @@ const createKnight = (() => {
         // here i need to call again the function recursively with each move until one of these paths lead me to the final position.
 
         if (currentNode.moves.find(
-          (element) => element.toString() === lastPos.toString())){
+          (element) => element.toString() === lastPos.toString())){  // base case, the target is a possible move of the current node.
           console.log("success")
-        }
         
+        }
+        else{
+          
+          if(checkedMoves.includes(currentNode.data.toString())) return null // if the move is already checked, don't call the recursive function with that move. (avoid infinite loop)
 
-      });
+          checkedMoves.push(currentNode.data.toString())
+          recursive(currentNode.data,finalPos)
 
+        }
+      }
+      
+    
+
+      console.log(checkedMoves)
      
     };
+    possibleKnightMoves(createMatrix(8),[4,0]).forEach(element => {
+
+      console.log(possibleKnightMoves(createMatrix(8),element))
+  
+    })
 
     return recursive(initialPos, finalPos);
   };
 
   console.log(possibleKnightMoves(createMatrix(8),[4,0]))
 
-
-  possibleKnightMoves(createMatrix(8),[4,0]).forEach(element => {
-
-    console.log(possibleKnightMoves(createMatrix(8),element))
-
-  })
     
  
   return { knightMoves };
