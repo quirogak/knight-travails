@@ -14,7 +14,9 @@ const createMatrix = (size) => {
   return containerMatrix;
 };
 
-const createKnight = () => {
+const simplifyMove = (move) => move.toString().replace(",", "");
+
+const createKnight = (() => {
   const possibleKnightMoves = (board, currentPos) => {
     const possibleMoves = [];
 
@@ -36,15 +38,11 @@ const createKnight = () => {
     const stringBoardPositions = [];
 
     for (let i = 0; i < possibleMoves.length; i++) {
-      stringPossibleMoves.push(
-        Object.values(possibleMoves[i]).toString().replace(",", "")
-      ); // get every possible move as a two value string, then push it into an array.
+      stringPossibleMoves.push(simplifyMove(Object.values(possibleMoves[i]))); // get every possible move as a two value string, then push it into an array.
     }
 
     for (let i = 0; i < board.length; i++) {
-      stringBoardPositions.push(
-        Object.values(board[i]).toString().replace(",", "")
-      ); // get every board position as a two value string, then push it into an array .
+      stringBoardPositions.push(simplifyMove(Object.values(board[i]))); // get every board position as a two value string, then push it into an array .
     }
 
     const onlyPossibleMoves = [];
@@ -58,14 +56,71 @@ const createKnight = () => {
     if (!stringBoardPositions.includes(currentPos.toString().replace(",", "")))
       return "Please enter a valid position"; // if the user enters a non-existent position
 
-      
     return onlyPossibleMoves;
-
   };
 
-  return possibleKnightMoves(createMatrix(8), [0, 0]);
-};
+  const knightMoves = (initialPos, finalPos) => {
+    // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
 
-console.log(createMatrix(8));
+    const Node = (data, moves) => {
+      if (data === undefined) {
+        data = null;
+      }
+      if (moves === undefined) {
+        moves = null;
+      }
 
-console.log(createKnight());
+      return { data, moves };
+    };
+
+    const checkedMoves = []
+    
+    const recursive = (firstPos, lastPos) => {
+
+      const firstObj = Node(
+        firstPos,
+        possibleKnightMoves(createMatrix(8), firstPos)
+      );
+
+      console.log(firstObj)
+  
+
+      firstObj.moves.forEach((e) => { // traverse possible moves, in order to find every path from firstPos to lastPos
+
+        console.log(e)
+
+        const currentNode = Node(e,possibleKnightMoves(createMatrix(8), e))
+
+        console.log(currentNode)
+
+        // here i need to call again the function recursively with each move until one of these paths lead me to the final position.
+
+        if (currentNode.moves.find(
+          (element) => element.toString() === lastPos.toString())){
+          console.log("success")
+        }
+        
+
+      });
+
+     
+    };
+
+    return recursive(initialPos, finalPos);
+  };
+
+  console.log(possibleKnightMoves(createMatrix(8),[4,0]))
+
+
+  possibleKnightMoves(createMatrix(8),[4,0]).forEach(element => {
+
+    console.log(possibleKnightMoves(createMatrix(8),element))
+
+  })
+    
+ 
+  return { knightMoves };
+})();
+
+
+console.log(createKnight.knightMoves([4, 0], [4,3]));
