@@ -59,9 +59,13 @@ const createKnight = (() => {
     return onlyPossibleMoves;
   };
 
+
+
+
   const knightMoves = (initialPos, finalPos) => {
     // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
-
+ 
+    const visitedNodes = []
     const Node = (data, moves) => {
       if (data === undefined) {
         data = null;
@@ -73,62 +77,71 @@ const createKnight = (() => {
       return { data, moves };
     };
 
-    const checkedMoves = []
-    
-    const recursive = (firstPos, lastPos) => {
-
-      const firstObj = Node(
-        firstPos,
-        possibleKnightMoves(createMatrix(8), firstPos)
-      );
   
+    const initialNode = Node(initialPos,possibleKnightMoves(createMatrix(8),initialPos))
+    const finalNode = Node(finalPos,possibleKnightMoves(createMatrix(8),finalPos))
 
-      
-      for (let i = 0; i < firstObj.moves.length; i++) {
+    const toStringMoves = (Node) => {
 
-        const e = firstObj.moves[i];
+      const moves = []
 
-        const currentNode = Node(e,possibleKnightMoves(createMatrix(8), e))
+      if (Node.moves === undefined) {
 
-        console.log(currentNode)
+        Node.forEach(element => {
 
-        // here i need to call again the function recursively with each move until one of these paths lead me to the final position.
-
-        if (currentNode.moves.find(
-          (element) => element.toString() === lastPos.toString())){  // base case, the target is a possible move of the current node.
-          console.log("success")
+          moves.push(element.toString())
         
-        }
-        else{
-          
-          if(checkedMoves.includes(currentNode.data.toString())) return null // if the move is already checked, don't call the recursive function with that move. (avoid infinite loop)
+        })
 
-          checkedMoves.push(currentNode.data.toString())
-          recursive(currentNode.data,finalPos)
+        return moves
 
-        }
       }
+
+      Node.moves.forEach(element => {
+
+        moves.push(element.toString())
       
+      })
+
+      
+
+      return moves
+
+    }
+
+    if(!visitedNodes.includes(initialNode.data.toString())) console.log(initialNode)
     
 
-      console.log(checkedMoves)
-     
-    };
-    possibleKnightMoves(createMatrix(8),[4,0]).forEach(element => {
+    const searchCommonMoves = (arr1, arr2) => arr1.some(item => arr2.includes(item))
 
-      console.log(possibleKnightMoves(createMatrix(8),element))
+   
+    if (searchCommonMoves(toStringMoves(initialNode),toStringMoves(finalNode))) console.log("connected") // base case, the final node and initial node are connected by at least one move.
+    
+    if(visitedNodes.includes(initialNode.data.toString())) return null
+
+   
+
+    visitedNodes.push(initialNode.data.toString())
+
+    initialNode.moves.forEach(element => {
+
+      if (searchCommonMoves(toStringMoves(possibleKnightMoves(createMatrix(8),element)),toStringMoves(finalNode))) console.log("success") // here we are going a layer deep of possible moves.
+      // if there isn't any movement in common between the finalNode moves, and the current layer, go a layer deeper of possible moves.
   
-    })
-
-    return recursive(initialPos, finalPos);
-  };
-
-  console.log(possibleKnightMoves(createMatrix(8),[4,0]))
+    });
 
     
+
+  }
+
+  console.log(possibleKnightMoves(createMatrix(8),[1,0]))
+  
+
+
+  
  
   return { knightMoves };
 })();
 
 
-console.log(createKnight.knightMoves([4, 0], [4,3]));
+console.log(createKnight.knightMoves([4, 0], [1,0]));
