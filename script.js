@@ -59,175 +59,187 @@ const createKnight = (() => {
     return onlyPossibleMoves;
   };
 
-  
+  const knightMoves = (initialPos, finalPos) => {
+    const length = [];
 
-  const knightMoves = (initialPos,finalPos) => {
+    const varContainer = (initialPos, finalPos, isBackwards) => {
+      let isAMove = false;
 
-    let isAMove = false;
+      const path = [];
 
-    const path = [];
+      const visitedNodes = [];
 
-    const visitedNodes = [];
+      const recursive = (initialPos, finalPos) => {
+        // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
 
+        const Node = (data, moves) => {
+          if (data === undefined) {
+            data = null;
+          }
+          if (moves === undefined) {
+            moves = null;
+          }
 
-    const recursive = (initialPos, finalPos) => {
-    // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
+          return { data, moves };
+        };
 
+        const initialNode = Node(
+          initialPos,
+          possibleKnightMoves(createMatrix(8), initialPos)
+        );
+        const finalNode = Node(
+          finalPos,
+          possibleKnightMoves(createMatrix(8), finalPos)
+        );
 
-      const Node = (data, moves) => {
-        if (data === undefined) {
-          data = null;
-        }
-        if (moves === undefined) {
-          moves = null;
-        }
+        const finalMessage = (finalPath) => {
+          length.push(path.length - 1); // push path length to find out the shortest.
 
-        return { data, moves };
-      };
+          const message = `You made it in ${
+            path.length - 1
+          } moves! Here's your path: `;
 
-      const initialNode = Node(
-        initialPos,
-        possibleKnightMoves(createMatrix(8), initialPos)
-      );
-      const finalNode = Node(
-        finalPos,
-        possibleKnightMoves(createMatrix(8), finalPos)
-      );
+          console.log(message);
 
-      const finalMessage = (finalPath) => {
-        const message = `You made it in ${
-          path.length - 1
-        } moves! Here's your path: `;
+          if (isBackwards === true) {
+            for (let i = finalPath.length - 1; i >= 0; i--) {
+              const element = finalPath[i];
+              console.log(element);
+            }
 
-        console.log(message);
+            return "end.";
+          }
 
-        for (let i = 0; i < finalPath.length; i++) {
-          const element = finalPath[i];
-          console.log(element);
-        }
+          for (let i = 0; i < finalPath.length; i++) {
+            const element = finalPath[i];
+            console.log(element);
+          }
 
-        return "end.";
-      };
+          return "end.";
+        };
 
-      const toNumberMoves = (Node) => {
-        const changedNode = Node[0].replace(",", "");
-        const stringMove = changedNode.split("");
-        const numberMove = stringMove.map((element) => parseInt(element, 10));
+        const toNumberMoves = (Node) => {
+          const changedNode = Node[0].replace(",", "");
+          const stringMove = changedNode.split("");
+          const numberMove = stringMove.map((element) => parseInt(element, 10));
 
-        return numberMove;
-      };
+          return numberMove;
+        };
 
-      const toStringMoves = (Node) => {
-        const moves = [];
+        const toStringMoves = (Node) => {
+          const moves = [];
 
-        if (Node.moves === undefined) {
-          Node.forEach((element) => {
+          if (Node.moves === undefined) {
+            Node.forEach((element) => {
+              moves.push(element.toString());
+            });
+
+            return moves;
+          }
+
+          Node.moves.forEach((element) => {
             moves.push(element.toString());
           });
 
           return moves;
-        }
+        };
 
-        Node.moves.forEach((element) => {
-          moves.push(element.toString());
-        });
+        // the difference between this algorithm and the previous one (see older commits), is that we are visiting the possible nodes using a sort-of breadth-first search, instead of a depth first.
 
-        return moves;
-      };
-
-
-      // the difference between this algorithm and the previous one (see older commits), is that we are visiting the possible nodes using a sort-of breadth-first search, instead of a depth first.
-
-      if (toStringMoves(initialNode).includes(finalNode.data.toString())) {
-      // base case 1 when the initial move has the final move as a possible move.
-        path.push(initialNode.data);
-        path.push(finalNode.data);
-        return finalMessage(path);
-      }
-
-      if (
-        !visitedNodes.includes(initialNode.data.toString()) &&
-      isAMove === false
-      )
-        path.push(initialNode.data);
-      
-      if(visitedNodes.includes(initialNode.data.toString()) &&  // this was the fix to the previously mentioned but, i wasn't utilizing the visited Nodes array to avoid infinite loops as it should be.
-      isAMove === false){return null}
-
-
-      const searchCommonMoves = (arr1, arr2) =>
-        arr1.some((item) => arr2.includes(item));
-
-      if (
-        searchCommonMoves(toStringMoves(initialNode), toStringMoves(finalNode))
-      ) {
-      // base case 2, the final node and initial node are connected by at least one move.
-
-        const commonMove = toStringMoves(
-          possibleKnightMoves(createMatrix(8), initialNode.data)
-        ).filter((value) => toStringMoves(finalNode).includes(value));
-        path.push(toNumberMoves(commonMove));
-        path.push(finalNode.data);
-
-        return finalMessage(path); 
-      }
-
-      visitedNodes.push(initialNode.data.toString());
-
-
-      for (let i = 0; i < initialNode.moves.length; i++) {
-      // i could have used a forEach loop, but i wouldn't be able to break it.
-
-        if (isAMove === true) break; // if the shortest path is already found, break the loop to avoid path pollution.
-
-        // if there is any common moves between the current element and the moves of the finalNode, push element to path and set isAMove to true.
-        if (
-          searchCommonMoves(
-            toStringMoves(
-              possibleKnightMoves(createMatrix(8), initialNode.moves[i])
-            ),
-            toStringMoves(finalNode)
-          )
-        ) {
-          const commonMove = toStringMoves(
-            possibleKnightMoves(createMatrix(8), initialNode.moves[i])
-          ).filter((value) => toStringMoves(finalNode).includes(value));
-
-          path.push(initialNode.moves[i]);
-          path.push(toNumberMoves(commonMove));
-  
-          isAMove = true;
+        if (toStringMoves(initialNode).includes(finalNode.data.toString())) {
+          // base case 1 when the initial move has the final move as a possible move.
+          path.push(initialNode.data);
           path.push(finalNode.data);
           return finalMessage(path);
         }
-      }
 
-      if (isAMove === true) {
+        if (
+          !visitedNodes.includes(initialNode.data.toString()) &&
+          isAMove === false
+        )
+          path.push(initialNode.data);
+
+        if (
+          visitedNodes.includes(initialNode.data.toString()) && // this was the fix to the previously mentioned but, i wasn't utilizing the visited Nodes array to avoid infinite loops as it should be.
+          isAMove === false
+        ) {
+          return null;
+        }
+
+        const searchCommonMoves = (arr1, arr2) =>
+          arr1.some((item) => arr2.includes(item));
+
+        if (
+          searchCommonMoves(
+            toStringMoves(initialNode),
+            toStringMoves(finalNode)
+          )
+        ) {
+          // base case 2, the final node and initial node are connected by at least one move.
+
+          const commonMove = toStringMoves(
+            possibleKnightMoves(createMatrix(8), initialNode.data)
+          ).filter((value) => toStringMoves(finalNode).includes(value));
+          path.push(toNumberMoves(commonMove));
+          path.push(finalNode.data);
+
+          return finalMessage(path);
+        }
+
+        visitedNodes.push(initialNode.data.toString());
+
+        for (let i = 0; i < initialNode.moves.length; i++) {
+          // i could have used a forEach loop, but i wouldn't be able to break it.
+
+          if (isAMove === true) break; // if the shortest path is already found, break the loop to avoid path pollution.
+
+          // if there is any common moves between the current element and the moves of the finalNode, push element to path and set isAMove to true.
+          if (
+            searchCommonMoves(
+              toStringMoves(
+                possibleKnightMoves(createMatrix(8), initialNode.moves[i])
+              ),
+              toStringMoves(finalNode)
+            )
+          ) {
+            const commonMove = toStringMoves(
+              possibleKnightMoves(createMatrix(8), initialNode.moves[i])
+            ).filter((value) => toStringMoves(finalNode).includes(value));
+
+            path.push(initialNode.moves[i]);
+            path.push(toNumberMoves(commonMove));
+
+            isAMove = true;
+            path.push(finalNode.data);
+            return finalMessage(path);
+          }
+        }
+
+        if (isAMove === true) {
+          path.push(finalPos);
+          return "end";
+        } // if there is a movement in common in at least one move Node, we won't run knightMoves again, but we will evaluate the rest of the moves.
+
+        // if there isn't any movement in common between the finalNode moves, and the current layer, go a layer deeper of possible moves.
+        initialNode.moves.forEach((element) => {
+          recursive(element, finalPos);
+        });
+
         path.push(finalPos);
         return "end";
-      } // if there is a movement in common in at least one move Node, we won't run knightMoves again, but we will evaluate the rest of the moves.
+      };
 
-      // if there isn't any movement in common between the finalNode moves, and the current layer, go a layer deeper of possible moves.
-      initialNode.moves.forEach((element) => {
-        recursive(element, finalPos);
-      });
-
-      path.push(finalPos);
-      return "end";
+      return recursive(initialPos, finalPos);
     };
 
-    return recursive(initialPos,finalPos)
+    const toNum = (element) => parseFloat(element.toString().replace(",", "."));
 
-
-
-  }
-
-  
-  
+    if (toNum(initialPos) > toNum(finalPos)) {
+      // if the initial position is bigger than the final position, run the path backwards.
+      return varContainer(finalPos, initialPos, true);
+    }
+    return varContainer(initialPos, finalPos, false);
+  };
 
   return { knightMoves };
 })();
-
-console.log(createKnight.knightMoves([0, 0], [7,2]));
-
-console.log(createKnight.knightMoves([0, 0], [7,1]));
