@@ -63,10 +63,12 @@ const createKnight = (() => {
 
   const path = [];
 
+  const visitedNodes = [];
+
   const knightMoves = (initialPos, finalPos) => {
     // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
 
-    const visitedNodes = [];
+
     const Node = (data, moves) => {
       if (data === undefined) {
         data = null;
@@ -128,6 +130,7 @@ const createKnight = (() => {
       return moves;
     };
 
+
     // the difference between this algorithm and the previous one (see older commits), is that we are visiting the possible nodes using a sort-of breadth-first search, instead of a depth first.
 
     if (toStringMoves(initialNode).includes(finalNode.data.toString())) {
@@ -142,6 +145,10 @@ const createKnight = (() => {
       isAMove === false
     )
       path.push(initialNode.data);
+      
+    if(visitedNodes.includes(initialNode.data.toString()) &&  // this was the fix to the previously mentioned but, i wasn't utilizing the visited Nodes array to avoid infinite loops as it should be.
+      isAMove === false){return null}
+
 
     const searchCommonMoves = (arr1, arr2) =>
       arr1.some((item) => arr2.includes(item));
@@ -161,6 +168,7 @@ const createKnight = (() => {
     }
 
     visitedNodes.push(initialNode.data.toString());
+
 
     for (let i = 0; i < initialNode.moves.length; i++) {
       // i could have used a forEach loop, but i wouldn't be able to break it.
@@ -182,9 +190,7 @@ const createKnight = (() => {
 
         path.push(initialNode.moves[i]);
         path.push(toNumberMoves(commonMove));
-
-        console.log(path);
-        console.log("hit");
+  
         isAMove = true;
         path.push(finalNode.data);
         return finalMessage(path);
@@ -205,10 +211,7 @@ const createKnight = (() => {
     return "end";
   };
 
-  console.log(possibleKnightMoves(createMatrix(8), [0, 0]));
-  console.log(possibleKnightMoves(createMatrix(8), [1, 7]));
-
   return { knightMoves };
 })();
 
-console.log(createKnight.knightMoves([7, 7], [1, 3]));
+console.log(createKnight.knightMoves([0, 0], [7,2]));
