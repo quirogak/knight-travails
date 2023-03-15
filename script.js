@@ -70,7 +70,6 @@ const createKnight = (() => {
       const visitedNodes = [];
 
       const recursive = (initialPos, finalPos) => {
-        // recursive function to calculate every possible next move without repeating (?), when it finds the path to the ending position (?).
 
         const Node = (data, moves) => {
           if (data === undefined) {
@@ -95,9 +94,8 @@ const createKnight = (() => {
         const finalMessage = (finalPath) => {
           length.push(path.length - 1); // push path length to find out the shortest.
 
-          const message = `You made it in ${
-            path.length - 1
-          } moves! Here's your path: `;
+          const message = `You made it in ${path.length - 1
+            } moves! Here's your path: `;
 
           console.log(message);
 
